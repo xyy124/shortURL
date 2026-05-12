@@ -1,0 +1,38 @@
+import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+import Home from '@/views/Home.vue'
+import Login from '@/views/Login.vue'
+import Register from '@/views/Register.vue'
+import NotFound from '@/views/NotFound.vue'
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+    { path: '/', name: 'Home', component: Home },
+    { path: '/login', name: 'Login', component: Login },
+    { path: '/register', name: 'Register', component: Register },
+    {
+      path: '/admin',
+      component: () => import('@/views/admin/Layout.vue'),
+      meta: { requiresAuth: true },
+      children: [
+        { path: '', redirect: { name: 'Dashboard' } },
+        { path: 'dashboard', name: 'Dashboard', component: () => import('@/views/admin/Dashboard.vue') },
+        { path: 'urls', name: 'UrlList', component: () => import('@/views/admin/UrlList.vue') },
+        { path: 'stats', name: 'Stats', component: () => import('@/views/admin/Stats.vue') },
+      ],
+    },
+    { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
+  ],
+})
+
+router.beforeEach((to, _from) => {
+  if (to.meta.requiresAuth) {
+    const auth = useAuthStore()
+    if (!auth.isLoggedIn) {
+      return { name: 'Login', query: { redirect: to.fullPath } }
+    }
+  }
+})
+
+export default router
