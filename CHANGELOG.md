@@ -18,3 +18,13 @@
 - **自定义后缀实时校验** — 输入框即时提示格式错误（字母开头、4-16 位字母数字）
 - **Vercel 设计主题** — 全局颜色、间距、圆角、阴影全面替换为 Vercel 风格，重构 header / sidebar / 首页 / 管理后台样式
 - **图表指标说明** — 统计页下方增加 PV / UV / IP 含义说明
+
+## Docker
+
+- **清理无用环境变量** — docker-compose 中后端服务移除未使用的 `DB_HOST`/`DB_PORT`/`DB_USER`/`DB_NAME`/`REDIS_HOST`/`REDIS_PORT`，只保留实际生效的配置
+- **启动顺序优化** — 前端 `depends_on` 改为标准语法
+
+## 安全
+
+- **移除密码硬编码** — MySQL 密码改为 `${MYSQL_PASSWORD:root123}` 环境变量占位符，真实密码移入 `~/.bashrc` 本地管理
+- **清理 Git 追踪** — `.claude/` 加入 `.gitignore`，移除包含本地路径的配置文件
