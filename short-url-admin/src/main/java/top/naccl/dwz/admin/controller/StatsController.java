@@ -30,13 +30,14 @@ public class StatsController {
     public ApiResponse<StatsOverviewVO> overview(@AuthenticationPrincipal UserDetails userDetails) {
         Long userId = Long.valueOf(userDetails.getUsername());
         StatsOverviewVO vo = new StatsOverviewVO();
-        vo.setTotalUrls(urlMapper.selectCount(new LambdaQueryWrapper<UrlMap>().eq(UrlMap::getUserId, userId)));
-        vo.setTotalViews(urlMapper.selectList(new LambdaQueryWrapper<UrlMap>()
-                        .eq(UrlMap::getUserId, userId))
+        vo.setTotalUrls(urlMapper.selectCount(
+                new LambdaQueryWrapper<UrlMap>().eq(UrlMap::getUserId, userId).or().isNull(UrlMap::getUserId)));
+        vo.setTotalViews(urlMapper.selectList(
+                new LambdaQueryWrapper<UrlMap>().eq(UrlMap::getUserId, userId).or().isNull(UrlMap::getUserId))
                 .stream().mapToInt(UrlMap::getViews).sum());
-        vo.setTodayNewUrls(urlMapper.selectCount(new LambdaQueryWrapper<UrlMap>()
-                .eq(UrlMap::getUserId, userId)
-                .apply("date(create_time) = curdate()")));
+        vo.setTodayNewUrls(urlMapper.selectCount(
+                new LambdaQueryWrapper<UrlMap>().eq(UrlMap::getUserId, userId).or().isNull(UrlMap::getUserId)
+                        .apply("date(create_time) = curdate()")));
         vo.setTodayViews(0);
         return ApiResponse.ok(vo);
     }

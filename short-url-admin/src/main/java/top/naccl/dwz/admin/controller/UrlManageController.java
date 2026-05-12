@@ -50,7 +50,7 @@ public class UrlManageController {
         Page<UrlMap> result = urlMapper.selectPage(
                 new Page<>(page, size),
                 new LambdaQueryWrapper<UrlMap>()
-                        .eq(UrlMap::getUserId, userId)
+                        .eq(UrlMap::getUserId, userId).or().isNull(UrlMap::getUserId)
                         .orderByDesc(UrlMap::getCreateTime));
         return ApiResponse.ok(new PageResult<>(result.getTotal(), page, size, result.getRecords()));
     }
