@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { getDailyStats } from '@/api/stats'
 import type { DailyStatsItem } from '@/api/types'
 import * as echarts from 'echarts'
@@ -13,11 +13,10 @@ async function fetchData() {
   loading.value = true
   try {
     const res = await getDailyStats({ days: days.value })
+    loading.value = false
     await nextTick()
     renderChart(res.data)
   } catch {
-    // handled by interceptor
-  } finally {
     loading.value = false
   }
 }
@@ -73,8 +72,14 @@ function renderChart(data: DailyStatsItem[]) {
   })
 }
 
+onMounted(() => {
+  fetchData()
+  window.addEventListener('resize', () => chart?.resize())
+})
+onUnmounted(() => {
+  chart?.dispose()
+})
 watch(days, fetchData)
-onMounted(fetchData)
 </script>
 
 <template>
