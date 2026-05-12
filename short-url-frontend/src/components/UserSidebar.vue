@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
@@ -42,6 +42,10 @@ function showToast(msg: string) {
   toastTimer = window.setTimeout(() => { toast.value = '' }, 2500)
 }
 
+onUnmounted(() => {
+  if (toastTimer) clearTimeout(toastTimer)
+})
+
 function handleLogout() {
   auth.logout()
   router.push('/')
@@ -74,13 +78,14 @@ function isDisabled(item: MenuItem): boolean {
       </div>
     </div>
 
-    <nav class="sidebar-nav">
-      <template v-for="item in menuItems" :key="item.path">
+    <nav class="sidebar-nav" aria-label="主导航">
+      <template v-for="(item, index) in menuItems" :key="item.isDivider ? 'divider-' + index : item.path">
         <div v-if="item.isDivider" class="sidebar-divider" />
         <button
           v-else
           class="sidebar-item"
           :class="{ active: isActive(item), disabled: isDisabled(item) }"
+          :disabled="isDisabled(item)"
           @click="handleNav(item)"
         >
           <span class="sidebar-item-icon">{{ item.icon }}</span>
@@ -98,7 +103,7 @@ function isDisabled(item: MenuItem): boolean {
     </div>
 
     <Teleport to="body">
-      <div v-if="toast" class="toast">{{ toast }}</div>
+      <div v-if="toast" class="toast" role="alert">{{ toast }}</div>
     </Teleport>
   </aside>
 </template>
@@ -233,13 +238,10 @@ function isDisabled(item: MenuItem): boolean {
   background: var(--accent);
 }
 
-.sidebar-item.disabled {
+.sidebar-item:disabled {
   opacity: 0.4;
   cursor: not-allowed;
-}
-
-.sidebar-item.disabled:hover {
-  opacity: 0.5;
+  pointer-events: none;
 }
 
 .sidebar-item-icon {
