@@ -98,8 +98,9 @@ watch(days, fetchData)
       </select>
     </div>
     <div v-if="loading" class="loading-wrap"><span class="spinner" /></div>
-    <div v-else-if="!hasData" class="loading-wrap" style="color:var(--color-text-secondary)">暂无数据</div>
-    <div v-else ref="chartRef" class="chart-wrap card" />
+    <div v-else ref="chartRef" class="chart-wrap card">
+      <div v-if="!hasData" class="empty-state">暂无数据</div>
+    </div>
   </div>
 </template>
 
@@ -123,8 +124,19 @@ watch(days, fetchData)
 }
 
 .chart-wrap {
+  position: relative;
   width: 100%;
   height: 400px;
   padding: var(--space-4);
+}
+
+.empty-state {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+  font-size: var(--font-base);
 }
 </style>
