@@ -37,7 +37,7 @@ export interface StatsOverview {
 }
 
 export interface DailyStatsItem {
-  date: string
+  statsDate: string
   pv: number
   uv: number
   ipCount: number

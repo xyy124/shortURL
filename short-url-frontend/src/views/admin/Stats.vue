@@ -35,7 +35,7 @@ function renderChart(data: DailyStatsItem[]) {
     grid: { left: 50, right: 20, top: 20, bottom: 40 },
     xAxis: {
       type: 'category',
-      data: data.map((d) => d.date.substring(5)),
+      data: data.map((d) => d.statsDate.substring(5)),
       axisLine: { lineStyle: { color: '#E5E7EB' } },
     },
     yAxis: {
