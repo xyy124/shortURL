@@ -51,6 +51,7 @@ public class UrlManageController {
                 new Page<>(page, size),
                 new LambdaQueryWrapper<UrlMap>()
                         .eq(UrlMap::getUserId, userId).or().isNull(UrlMap::getUserId)
+                        .eq(UrlMap::getIsActive, true)
                         .orderByDesc(UrlMap::getCreateTime));
         return ApiResponse.ok(new PageResult<>(result.getTotal(), page, size, result.getRecords()));
     }
@@ -70,7 +71,9 @@ public class UrlManageController {
         if (urlMap == null) {
             throw new ApiException(ResultCode.NOT_FOUND);
         }
-        urlMapper.deleteById(id);
+        urlMap.setIsActive(false);
+        urlMap.setUpdateTime(LocalDateTime.now());
+        urlMapper.updateById(urlMap);
         cacheService.evict(urlMap.getShortCode());
         return ApiResponse.ok(null);
     }
