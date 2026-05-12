@@ -52,7 +52,7 @@ async function handleRegister() {
         <div class="form-group">
           <label class="form-label">
             昵称
-            <span class="form-optional">（选填）</span>
+            <span class="form-optional">选填</span>
           </label>
           <input v-model="nickname" class="input" placeholder="选填" />
         </div>
@@ -65,7 +65,7 @@ async function handleRegister() {
           <input v-model="confirmPassword" type="password" class="input" placeholder="再次输入密码" autocomplete="new-password" />
         </div>
         <p v-if="error" class="alert alert-error">{{ error }}</p>
-        <button class="btn btn-primary btn-submit" :disabled="loading">
+        <button class="btn btn-primary btn-pill btn-submit" :disabled="loading">
           <span v-if="loading" class="spinner" />
           {{ loading ? '注册中...' : '注册' }}
         </button>
@@ -78,52 +78,52 @@ async function handleRegister() {
 <style scoped>
 .auth-card {
   max-width: 400px;
-  margin: var(--space-10) auto;
-  padding: var(--space-8);
+  margin: var(--space-4xl) auto;
+  padding: var(--space-2xl);
 }
 
 .auth-title {
   font-size: var(--font-2xl);
-  font-weight: 700;
+  font-weight: 600;
+  letter-spacing: -0.96px;
   text-align: center;
-  margin-bottom: var(--space-2);
+  margin-bottom: var(--space-xs);
 }
 
 .auth-desc {
   text-align: center;
-  color: var(--color-text-secondary);
+  color: var(--color-body);
   font-size: var(--font-sm);
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-lg);
 }
 
 .form-group {
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-md);
 }
 
 .form-label {
   display: block;
   font-size: var(--font-sm);
   font-weight: 500;
-  margin-bottom: var(--space-2);
-  color: var(--color-text);
+  margin-bottom: var(--space-xs);
+  color: var(--color-ink);
 }
 
 .form-optional {
-  color: var(--color-text-secondary);
+  color: var(--color-mute);
   font-weight: 400;
+  font-size: var(--font-xs);
 }
 
 .btn-submit {
   width: 100%;
-  padding: var(--space-3);
-  font-size: var(--font-base);
-  margin-top: var(--space-4);
+  margin-top: var(--space-md);
 }
 
 .auth-switch {
   text-align: center;
-  margin-top: var(--space-5);
+  margin-top: var(--space-lg);
   font-size: var(--font-sm);
-  color: var(--color-text-secondary);
+  color: var(--color-body);
 }
 </style>

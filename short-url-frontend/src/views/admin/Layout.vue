@@ -20,6 +20,6 @@ import AppSidebar from '@/components/AppSidebar.vue'
 .admin-main {
   flex: 1;
   margin-left: var(--sidebar-width);
-  padding: var(--space-6);
+  padding: var(--space-lg);
 }
 </style>

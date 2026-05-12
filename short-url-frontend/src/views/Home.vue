@@ -63,7 +63,7 @@ function handleReset() {
 <template>
   <main class="page">
     <div class="hero">
-      <h1 class="hero-title">短链接生成器</h1>
+      <h1 class="hero-title">短链接 · 让分享更简单</h1>
       <p class="hero-desc">将长链接转换为简短、易分享的短链接，支持自定义后缀和数据统计</p>
     </div>
 
@@ -74,7 +74,7 @@ function handleReset() {
           <input
             v-model="longUrl"
             type="url"
-            class="input"
+            class="input input-lg"
             placeholder="请输入长链接，如 https://example.com/very/long/url"
             @keyup.enter="handleSubmit"
           />
@@ -82,9 +82,9 @@ function handleReset() {
         <div class="form-group">
           <label class="form-label">
             自定义后缀
-            <span class="form-optional">（选填，仅登录用户可用）</span>
+            <span class="form-optional">选填</span>
           </label>
-          <div class="custom-code-wrap">
+          <div class="custom-code-field" :class="{ 'is-disabled': !auth.isLoggedIn }">
             <span class="custom-code-prefix">{{ siteHost }}/</span>
             <input
               v-model="customCode"
@@ -95,11 +95,11 @@ function handleReset() {
             />
           </div>
           <p v-if="!auth.isLoggedIn" class="form-hint">登录后可使用自定义短链功能</p>
-          <p v-else-if="customCode.trim() && customCodeError" class="alert alert-error" style="margin-top:6px">{{ customCodeError }}</p>
-          <p v-else-if="auth.isLoggedIn" class="form-hint">以字母开头，4-16位字母数字</p>
+          <p v-else-if="customCode.trim() && customCodeError" class="form-error">{{ customCodeError }}</p>
+          <p v-else class="form-hint">以字母开头，4-16位字母数字</p>
         </div>
         <p v-if="error" class="alert alert-error">{{ error }}</p>
-        <button class="btn btn-primary btn-submit" :disabled="loading" @click="handleSubmit">
+        <button class="btn btn-primary btn-pill btn-submit" :disabled="loading" @click="handleSubmit">
           <span v-if="loading" class="spinner" />
           {{ loading ? '生成中...' : '生成短链接' }}
         </button>
@@ -120,19 +120,22 @@ function handleReset() {
 <style scoped>
 .hero {
   text-align: center;
-  padding: var(--space-10) 0 var(--space-8);
+  padding: var(--space-4xl) 0 var(--space-2xl);
 }
 
 .hero-title {
-  font-size: var(--font-3xl);
-  font-weight: 800;
-  color: var(--color-text);
-  margin-bottom: var(--space-3);
+  font-size: var(--font-4xl);
+  font-weight: 600;
+  letter-spacing: -2.4px;
+  color: var(--color-ink);
+  margin-bottom: var(--space-md);
+  line-height: var(--font-4xl-lh);
 }
 
 .hero-desc {
-  color: var(--color-text-secondary);
-  font-size: var(--font-base);
+  color: var(--color-body);
+  font-size: var(--font-lg);
+  line-height: var(--font-lg-lh);
   max-width: 480px;
   margin: 0 auto;
 }
@@ -140,64 +143,89 @@ function handleReset() {
 .form-wrap {
   max-width: 560px;
   margin: 0 auto;
-  padding: var(--space-6);
+  padding: var(--space-xl) var(--space-lg);
   position: relative;
 }
 
 .form-group {
-  margin-bottom: var(--space-5);
+  margin-bottom: var(--space-lg);
 }
 
 .form-label {
   display: block;
   font-size: var(--font-sm);
   font-weight: 500;
-  margin-bottom: var(--space-2);
-  color: var(--color-text);
+  margin-bottom: var(--space-xs);
+  color: var(--color-ink);
 }
 
 .form-optional {
-  color: var(--color-text-secondary);
+  color: var(--color-mute);
   font-weight: 400;
+  font-size: var(--font-xs);
 }
 
 .form-hint {
   font-size: var(--font-xs);
-  color: var(--color-text-secondary);
-  margin-top: var(--space-1);
+  color: var(--color-mute);
+  margin-top: var(--space-xxs);
 }
 
-.custom-code-wrap {
+.form-error {
+  font-size: var(--font-xs);
+  color: var(--color-error);
+  margin-top: var(--space-xxs);
+}
+
+.custom-code-field {
   display: flex;
   align-items: center;
-  gap: 0;
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+
+.custom-code-field:focus-within {
+  border-color: var(--color-link);
+  box-shadow: 0 0 0 1px var(--color-link);
+}
+
+.custom-code-field.is-disabled {
+  opacity: 0.5;
 }
 
 .custom-code-prefix {
-  padding: var(--space-2) var(--space-3);
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-right: none;
-  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+  padding: 0 var(--space-sm);
+  height: 40px;
+  display: flex;
+  align-items: center;
+  background: var(--color-canvas-soft);
+  color: var(--color-body);
   font-size: var(--font-sm);
-  color: var(--color-text-secondary);
   white-space: nowrap;
+  border-right: 1px solid var(--color-hairline);
+  flex-shrink: 0;
 }
 
-.custom-code-wrap .input {
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+.custom-code-field .input {
+  border: none;
+  border-radius: 0;
+  height: 40px;
+}
+
+.custom-code-field .input:focus {
+  box-shadow: none;
 }
 
 .btn-submit {
   width: 100%;
-  padding: var(--space-3);
-  font-size: var(--font-base);
-  margin-top: var(--space-4);
+  margin-top: var(--space-lg);
 }
 
 .copy-toast {
   position: absolute;
-  bottom: var(--space-3);
+  bottom: var(--space-sm);
   left: 50%;
   transform: translateX(-50%);
   font-size: var(--font-sm);

@@ -20,11 +20,11 @@ function handleLogout() {
         <template v-if="auth.isLoggedIn">
           <router-link to="/admin/dashboard" class="nav-link">管理后台</router-link>
           <span class="nav-user">{{ auth.user?.nickname || auth.user?.username }}</span>
-          <button class="btn btn-ghost" @click="handleLogout">退出</button>
+          <button class="btn btn-ghost btn-sm" @click="handleLogout">退出</button>
         </template>
         <template v-else>
-          <router-link to="/login" class="btn btn-ghost">登录</router-link>
-          <router-link to="/register" class="btn btn-primary">注册</router-link>
+          <router-link to="/login" class="nav-link">登录</router-link>
+          <router-link to="/register" class="btn btn-primary btn-sm">注册</router-link>
         </template>
       </nav>
     </div>
@@ -34,8 +34,8 @@ function handleLogout() {
 <style scoped>
 .header {
   height: var(--header-height);
-  background: var(--color-card);
-  border-bottom: 1px solid var(--color-border);
+  background: var(--color-canvas);
+  border-bottom: 1px solid var(--color-hairline);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -48,41 +48,46 @@ function handleLogout() {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 var(--space-6);
+  padding: 0 var(--space-lg);
 }
 
 .logo {
   font-size: var(--font-xl);
-  font-weight: 700;
-  color: var(--color-primary);
+  font-weight: 600;
+  color: var(--color-ink);
+  letter-spacing: -0.6px;
 }
 
 .logo:hover {
-  color: var(--color-primary-hover);
+  opacity: 0.7;
 }
 
 .nav {
   display: flex;
   align-items: center;
-  gap: var(--space-4);
+  gap: var(--space-md);
 }
 
 .nav-link {
-  color: var(--color-text-secondary);
+  color: var(--color-body);
   font-size: var(--font-sm);
   font-weight: 500;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-full);
+  transition: background 0.15s;
 }
 
 .nav-link:hover {
-  color: var(--color-text);
+  background: var(--color-canvas-soft);
+  color: var(--color-ink);
 }
 
 .nav-link.router-link-active {
-  color: var(--color-primary);
+  color: var(--color-ink);
 }
 
 .nav-user {
   font-size: var(--font-sm);
-  color: var(--color-text-secondary);
+  color: var(--color-body);
 }
 </style>

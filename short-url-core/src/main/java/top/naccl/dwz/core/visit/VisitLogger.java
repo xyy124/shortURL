@@ -1,5 +1,6 @@
 package top.naccl.dwz.core.visit;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,8 @@ public class VisitLogger {
             VisitLog visitLog = new VisitLog();
             visitLog.setShortCode(shortCode);
             visitLog.setVisitTime(LocalDateTime.now());
-            visitLog.setIp(IpAddressUtils.getIpAddress(request));
+            String ip = IpAddressUtils.getIpAddress(request);
+            visitLog.setIp(ip);
             String ua = request.getHeader("User-Agent");
             visitLog.setUserAgent(ua);
             visitLog.setReferer(request.getHeader("Referer"));
@@ -40,7 +42,20 @@ public class VisitLogger {
                         ua.contains("Linux") ? "Linux" : "Other");
             }
             visitLogMapper.insert(visitLog);
-            dailyStatsMapper.upsertPv(shortCode, LocalDate.now());
+
+            LocalDate today = LocalDate.now();
+            boolean isNewVisitor = visitLogMapper.selectCount(
+                    new LambdaQueryWrapper<VisitLog>()
+                            .eq(VisitLog::getShortCode, shortCode)
+                            .eq(VisitLog::getIp, ip)
+                            .apply("date(visit_time) = curdate()")
+            ) == 1;
+
+            dailyStatsMapper.upsertPv(shortCode, today);
+            if (isNewVisitor) {
+                dailyStatsMapper.incrementUv(shortCode, today);
+                dailyStatsMapper.incrementIp(shortCode, today);
+            }
         } catch (Exception e) {
             log.error("记录访问日志失败: shortCode={}", shortCode, e);
         }

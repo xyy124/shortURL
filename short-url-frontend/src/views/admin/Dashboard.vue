@@ -45,20 +45,20 @@ const cards = [
 .loading-wrap {
   display: flex;
   justify-content: center;
-  padding: var(--space-10);
+  padding: var(--space-2xl);
 }
 
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: var(--space-5);
+  gap: var(--space-lg);
 }
 
 .stat-card {
   display: flex;
   align-items: center;
-  gap: var(--space-4);
-  padding: var(--space-5);
+  gap: var(--space-md);
+  padding: var(--space-lg);
 }
 
 .stat-dot {
@@ -70,7 +70,7 @@ const cards = [
 
 .stat-label {
   font-size: var(--font-sm);
-  color: var(--color-text-secondary);
+  color: var(--color-body);
 }
 
 .stat-value {

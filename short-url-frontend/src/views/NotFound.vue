@@ -9,19 +9,19 @@
 <style scoped>
 .not-found {
   text-align: center;
-  padding-top: var(--space-10);
+  padding-top: var(--space-2xl);
 }
 
 .nf-code {
   font-size: 96px;
   font-weight: 800;
   color: var(--color-primary);
-  margin-bottom: var(--space-2);
+  margin-bottom: var(--space-xs);
 }
 
 .nf-desc {
   font-size: var(--font-lg);
-  color: var(--color-text-secondary);
-  margin-bottom: var(--space-6);
+  color: var(--color-body);
+  margin-bottom: var(--space-lg);
 }
 </style>

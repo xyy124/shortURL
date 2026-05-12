@@ -117,31 +117,31 @@ onMounted(fetchData)
 
 .td-actions {
   display: flex;
-  gap: var(--space-2);
+  gap: var(--space-xs);
 }
 
 .btn-sm {
-  padding: var(--space-1) var(--space-3);
+  padding: var(--space-xxs) var(--space-sm);
   font-size: var(--font-xs);
 }
 
 .table-loading,
 .table-empty {
   text-align: center;
-  padding: var(--space-10) !important;
-  color: var(--color-text-secondary);
+  padding: var(--space-2xl) !important;
+  color: var(--color-body);
 }
 
 .pagination {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-4);
-  margin-top: var(--space-4);
+  gap: var(--space-md);
+  margin-top: var(--space-md);
 }
 
 .page-info {
   font-size: var(--font-sm);
-  color: var(--color-text-secondary);
+  color: var(--color-body);
 }
 </style>

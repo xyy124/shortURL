@@ -16,6 +16,12 @@ public interface DailyStatsMapper extends BaseMapper<DailyStats> {
             "on duplicate key update pv = pv + 1")
     void upsertPv(@Param("shortCode") String shortCode, @Param("date") LocalDate date);
 
+    @Update("update daily_stats set uv = uv + 1 where short_code = #{shortCode} and stats_date = #{date}")
+    void incrementUv(@Param("shortCode") String shortCode, @Param("date") LocalDate date);
+
+    @Update("update daily_stats set ip_count = ip_count + 1 where short_code = #{shortCode} and stats_date = #{date}")
+    void incrementIp(@Param("shortCode") String shortCode, @Param("date") LocalDate date);
+
     @Select("select * from daily_stats where short_code = #{shortCode} and stats_date >= #{since} order by stats_date")
     List<DailyStats> selectByCodeAndDate(@Param("shortCode") String shortCode, @Param("since") LocalDate since);
 }
