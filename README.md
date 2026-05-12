@@ -4,7 +4,7 @@
 
 ## 功能特性
 
-- **短链生成** — MurmurHash32 + base62 生成 6 位短码，hash 冲突时使用计数器加盐重试
+- **短链生成** — MurmurHash32 + base62 生成 6 位短码，hash 冲突时使用计数器加盐重试，重试耗尽后由数据库唯一索引兜底
 - **自定义短链** — 登录用户可自定义短链码
 - **多级缓存** — Caffeine（本地）→ Redis（分布式）→ DB 三级缓存，穿透时使用 Redisson 分布式锁防止缓存雪崩
 - **布隆过滤器** — 基于 Redis BitMap 的分布式布隆过滤器（2^24 bits，5 个哈希函数），拦截不存在 key 的缓存穿透
@@ -20,7 +20,7 @@
 
 | 层次 | 技术 | 版本 |
 |------|------|------|
-| 语言 | Java | 17+ |
+| 语言 | Java | 17+（推荐 JDK 22） |
 | 框架 | Spring Boot | 3.4.5 |
 | ORM | MyBatis-Plus | 3.5.9 |
 | 安全 | Spring Security 6 + jjwt | 0.12.6 |
@@ -95,7 +95,12 @@ DB 查重 ── 不存在 ──▶ 写入 DB + 布隆过滤器 + 缓存
  存在 (真冲突)
     │
     ▼
-计数器加盐 (counter++) → 重新 hash → base62 → 检查 → 直到无冲突
+计数器加盐 (counter++) → 重新 hash → base62 → 检查
+    │
+ 重试耗尽
+    │
+    ▼
+写入 DB（唯一索引兜底）→ 成功则回填缓存
 ```
 
 ### 项目结构
@@ -229,7 +234,7 @@ short-url/
 |------|------|------|
 | GET | `/api/v1/admin/urls` | 分页获取我的短链列表 |
 | POST | `/api/v1/admin/urls` | 创建自定义短链 |
-| DELETE | `/api/v1/admin/urls/{id}` | 删除短链 |
+| DELETE | `/api/v1/admin/urls/{id}` | 软删除短链（置 `is_active=false`，保留统计数据） |
 | PUT | `/api/v1/admin/urls/{id}/toggle` | 启用/禁用短链 |
 | GET | `/api/v1/admin/urls/all` | 获取所有短链（管理员） |
 | GET | `/api/v1/admin/stats/overview` | 总览统计数据 |
@@ -292,7 +297,7 @@ docker compose up -d
 
 #### 前置要求
 
-- JDK 17+（推荐 JDK 22）
+- JDK 17+（推荐 JDK 22，暂不兼容 JDK 25）
 - Maven 3.9+
 - MySQL 8.0+
 - Redis 7+
