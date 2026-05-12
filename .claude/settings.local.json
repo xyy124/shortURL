@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(java -version)",
+      "Bash(mvn -version)",
+      "Bash(mysql --version)",
+      "Bash(redis-cli --version)",
+      "Bash(docker --version)",
+      "Bash(docker-compose --version)",
+      "Bash(choco list *)",
+      "Bash(scoop list *)",
+      "Bash(where mvn *)",
+      "Bash(rm -rf .git)",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
+    ]
+  }
+}
