@@ -1,5 +1,5 @@
 <script setup lang="ts">
-defineProps<{
+const props = defineProps<{
   shortUrl: string
   longUrl: string
 }>()
@@ -11,12 +11,12 @@ const emit = defineEmits<{
 
 async function handleCopy() {
   try {
-    await navigator.clipboard.writeText(shortUrl)
+    await navigator.clipboard.writeText(props.shortUrl)
     emit('copy')
   } catch {
     // fallback
     const ta = document.createElement('textarea')
-    ta.value = shortUrl
+    ta.value = props.shortUrl
     document.body.appendChild(ta)
     ta.select()
     document.execCommand('copy')
