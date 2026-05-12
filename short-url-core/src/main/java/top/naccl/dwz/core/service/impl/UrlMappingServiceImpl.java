@@ -48,27 +48,28 @@ public class UrlMappingServiceImpl implements UrlMappingService {
     public String createShortUrl(String longUrl, Long userId, String customCode) {
         if (StringUtils.isNotBlank(customCode)) {
             customValidator.validate(customCode);
-            return saveUrlMap(customCode, longUrl, userId, true);
+            return insertUrlMap(customCode, longUrl, userId);
         }
-        String shortCode = codeGenerator.generate(longUrl);
-        return saveUrlMap(shortCode, longUrl, userId, false);
+        String urlToHash = longUrl;
+        for (int i = 0; i <= ShortUrlConstants.MAX_RETRY; i++) {
+            String shortCode = codeGenerator.generate(urlToHash);
+            try {
+                return insertUrlMap(shortCode, longUrl, userId);
+            } catch (DuplicateKeyException e) {
+                log.warn("短码冲突(布隆过滤器误判), shortCode={}, retry={}", shortCode, i);
+                urlToHash = urlToHash + ShortUrlConstants.DUPLICATE_SALT;
+            }
+        }
+        throw new ApiException(ResultCode.ERROR.getCode(), "短码生成冲突过多，请稍后重试");
     }
 
-    private String saveUrlMap(String shortCode, String longUrl, Long userId, boolean isCustom) {
-        try {
-            UrlMap urlMap = new UrlMap(shortCode, longUrl);
-            urlMap.setUserId(userId);
-            urlMap.setIsCustom(isCustom);
-            urlMapper.insert(urlMap);
-            bloomFilter.add(shortCode);
-            cacheService.set(shortCode, longUrl);
-            return shortCode;
-        } catch (DuplicateKeyException e) {
-            if (isCustom) {
-                throw new ApiException(ResultCode.CONFLICT);
-            }
-            return createShortUrl(longUrl + ShortUrlConstants.DUPLICATE_SALT, userId, null);
-        }
+    private String insertUrlMap(String shortCode, String longUrl, Long userId) {
+        UrlMap urlMap = new UrlMap(shortCode, longUrl);
+        urlMap.setUserId(userId);
+        urlMapper.insert(urlMap);
+        bloomFilter.add(shortCode);
+        cacheService.set(shortCode, longUrl);
+        return shortCode;
     }
 
     @Override

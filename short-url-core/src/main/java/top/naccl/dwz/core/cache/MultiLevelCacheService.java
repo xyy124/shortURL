@@ -44,38 +44,38 @@ public class MultiLevelCacheService {
             return CacheConstants.EMPTY_VALUE.equals(value) ? null : value;
         }
 
-        // 4. 互斥锁加载 DB
+        // 4. 互斥锁加载 DB（while 循环避避免递归栈溢出）
         RLock lock = redissonClient.getLock(CacheConstants.LOCK_KEY_PREFIX + key);
         try {
-            if (lock.tryLock(2, 10, TimeUnit.SECONDS)) {
-                // Double-check
-                value = redisTemplate.opsForValue().get(CacheConstants.URL_MAPPING_KEY + key);
-                if (value != null) {
-                    caffeineCache.put(key, value);
-                    return CacheConstants.EMPTY_VALUE.equals(value) ? null : value;
+            while (true) {
+                if (lock.tryLock(2, 10, TimeUnit.SECONDS)) {
+                    try {
+                        // Double-check
+                        value = redisTemplate.opsForValue().get(CacheConstants.URL_MAPPING_KEY + key);
+                        if (value != null) {
+                            caffeineCache.put(key, value);
+                            return CacheConstants.EMPTY_VALUE.equals(value) ? null : value;
+                        }
+                        value = loader.get();
+                        long ttl = CacheConstants.REDIS_BASE_TTL_SECONDS
+                                + ThreadLocalRandom.current().nextLong(CacheConstants.REDIS_TTL_RANDOM_RANGE);
+                        if (value != null) {
+                            redisTemplate.opsForValue().set(CacheConstants.URL_MAPPING_KEY + key, value, ttl, TimeUnit.SECONDS);
+                        } else {
+                            redisTemplate.opsForValue().set(CacheConstants.URL_MAPPING_KEY + key,
+                                    CacheConstants.EMPTY_VALUE, CacheConstants.NULL_VALUE_TTL_SECONDS, TimeUnit.SECONDS);
+                        }
+                        caffeineCache.put(key, value != null ? value : CacheConstants.EMPTY_VALUE);
+                        return value;
+                    } finally {
+                        lock.unlock();
+                    }
                 }
-                value = loader.get();
-                long ttl = CacheConstants.REDIS_BASE_TTL_SECONDS
-                        + ThreadLocalRandom.current().nextLong(CacheConstants.REDIS_TTL_RANDOM_RANGE);
-                if (value != null) {
-                    redisTemplate.opsForValue().set(CacheConstants.URL_MAPPING_KEY + key, value, ttl, TimeUnit.SECONDS);
-                } else {
-                    redisTemplate.opsForValue().set(CacheConstants.URL_MAPPING_KEY + key,
-                            CacheConstants.EMPTY_VALUE, CacheConstants.NULL_VALUE_TTL_SECONDS, TimeUnit.SECONDS);
-                }
-                caffeineCache.put(key, value != null ? value : CacheConstants.EMPTY_VALUE);
-                return value;
-            } else {
                 Thread.sleep(50);
-                return getWithProtection(key, loader);
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             return null;
-        } finally {
-            if (lock.isHeldByCurrentThread()) {
-                lock.unlock();
-            }
         }
     }
 
