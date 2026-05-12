@@ -17,6 +17,7 @@ import top.naccl.dwz.core.mapper.UrlMapper;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/admin/stats")
@@ -38,7 +39,16 @@ public class StatsController {
         vo.setTodayNewUrls(urlMapper.selectCount(
                 new LambdaQueryWrapper<UrlMap>().eq(UrlMap::getUserId, userId).or().isNull(UrlMap::getUserId)
                         .apply("date(create_time) = curdate()")));
-        vo.setTodayViews(0);
+        List<String> myShortCodes = urlMapper.selectList(
+                new LambdaQueryWrapper<UrlMap>()
+                        .eq(UrlMap::getUserId, userId).or().isNull(UrlMap::getUserId)
+                        .select(UrlMap::getShortCode))
+                .stream().map(UrlMap::getShortCode).collect(Collectors.toList());
+        vo.setTodayViews(myShortCodes.isEmpty() ? 0 : dailyStatsMapper.selectList(
+                new LambdaQueryWrapper<DailyStats>()
+                        .in(DailyStats::getShortCode, myShortCodes)
+                        .eq(DailyStats::getStatsDate, LocalDate.now()))
+                .stream().mapToInt(DailyStats::getPv).sum());
         return ApiResponse.ok(vo);
     }
 
