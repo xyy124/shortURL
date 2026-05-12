@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -66,10 +67,15 @@ public class UrlManageController {
     }
 
     @DeleteMapping("/{id}")
-    public ApiResponse<Void> delete(@PathVariable Long id) {
+    public ApiResponse<Void> delete(@PathVariable Long id,
+                                    @AuthenticationPrincipal UserDetails userDetails) {
+        Long userId = Long.valueOf(userDetails.getUsername());
         UrlMap urlMap = urlMapper.selectById(id);
         if (urlMap == null) {
             throw new ApiException(ResultCode.NOT_FOUND);
+        }
+        if (!isAdmin(userDetails) && !userId.equals(urlMap.getUserId())) {
+            throw new ApiException(ResultCode.FORBIDDEN);
         }
         urlMap.setIsActive(false);
         urlMap.setUpdateTime(LocalDateTime.now());
@@ -79,10 +85,15 @@ public class UrlManageController {
     }
 
     @PutMapping("/{id}/toggle")
-    public ApiResponse<Void> toggleActive(@PathVariable Long id) {
+    public ApiResponse<Void> toggleActive(@PathVariable Long id,
+                                          @AuthenticationPrincipal UserDetails userDetails) {
+        Long userId = Long.valueOf(userDetails.getUsername());
         UrlMap urlMap = urlMapper.selectById(id);
         if (urlMap == null) {
             throw new ApiException(ResultCode.NOT_FOUND);
+        }
+        if (!isAdmin(userDetails) && !userId.equals(urlMap.getUserId())) {
+            throw new ApiException(ResultCode.FORBIDDEN);
         }
         urlMap.setIsActive(!urlMap.getIsActive());
         urlMap.setUpdateTime(LocalDateTime.now());
@@ -92,9 +103,15 @@ public class UrlManageController {
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<List<UrlMap>> allUrls() {
         List<UrlMap> list = urlMapper.selectList(
                 new LambdaQueryWrapper<UrlMap>().orderByDesc(UrlMap::getCreateTime));
         return ApiResponse.ok(list);
+    }
+
+    private boolean isAdmin(UserDetails userDetails) {
+        return userDetails.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
     }
 }

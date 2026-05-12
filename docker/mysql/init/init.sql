@@ -34,6 +34,9 @@ CREATE TABLE IF NOT EXISTS user (
   UNIQUE KEY uk_username (username)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT IGNORE INTO user (id, username, password, nickname, role, is_active)
+VALUES (1, 'admin', '$2a$10$tCV7tH93zoxa4WDIfwbbS.6H7Gw64/YjkeRy7b5s8aIlD96CF32I.', '管理员', 'ADMIN', 1);
+
 CREATE TABLE IF NOT EXISTS visit_log (
   id          BIGINT       NOT NULL AUTO_INCREMENT,
   short_code  VARCHAR(10)  NOT NULL COMMENT '短链码',
