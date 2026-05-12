@@ -69,6 +69,25 @@
   --sidebar-width: 240px;
   --header-height: 64px;
   --content-max-width: 1200px;
+
+  /* ─── User Dashboard ─── */
+  --sidebar-bg: #0f172a;
+  --sidebar-hover: rgba(255, 255, 255, 0.08);
+  --sidebar-active: rgba(245, 158, 11, 0.15);
+  --sidebar-text: #94a3b8;
+  --sidebar-text-active: #f8fafc;
+  --sidebar-divider: rgba(255, 255, 255, 0.08);
+  --accent: #f59e0b;
+  --accent-light: #fbbf24;
+  --accent-muted: rgba(245, 158, 11, 0.2);
+  --bg-main: #f8fafc;
+  --card-bg: #ffffff;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --border-light: #e2e8f0;
+  --font-mono: 'JetBrains Mono', 'Consolas', 'Courier New', monospace;
+  --font-logo: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 }
 
 html {
