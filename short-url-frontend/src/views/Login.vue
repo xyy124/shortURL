@@ -21,7 +21,7 @@ async function handleLogin() {
   loading.value = true
   try {
     await auth.login(username.value.trim(), password.value)
-    const redirect = (route.query.redirect as string) || '/admin/dashboard'
+    const redirect = (route.query.redirect as string) || (auth.isAdmin ? '/admin/dashboard' : '/')
     router.push(redirect)
   } catch (e: any) {
     error.value = e.message || '登录失败'
