@@ -9,6 +9,14 @@ const siteHost = computed(() => window.location.host)
 
 const longUrl = ref('')
 const customCode = ref('')
+
+const customCodeError = computed(() => {
+  const code = customCode.value.trim()
+  if (!code || !auth.isLoggedIn) return ''
+  if (!/^[a-zA-Z]/.test(code)) return '必须以字母开头'
+  if (!/^[a-zA-Z][a-zA-Z0-9]{3,15}$/.test(code)) return '4-16位字母数字组合'
+  return ''
+})
 const loading = ref(false)
 const error = ref('')
 const result = ref<{ shortUrl: string; longUrl: string } | null>(null)
@@ -23,6 +31,8 @@ async function handleSubmit() {
     error.value = '请输入链接地址'
     return
   }
+
+  if (customCodeError.value) return
 
   loading.value = true
   try {
@@ -85,6 +95,8 @@ function handleReset() {
             />
           </div>
           <p v-if="!auth.isLoggedIn" class="form-hint">登录后可使用自定义短链功能</p>
+          <p v-else-if="customCode.trim() && customCodeError" class="alert alert-error" style="margin-top:6px">{{ customCodeError }}</p>
+          <p v-else-if="auth.isLoggedIn" class="form-hint">以字母开头，4-16位字母数字</p>
         </div>
         <p v-if="error" class="alert alert-error">{{ error }}</p>
         <button class="btn btn-primary btn-submit" :disabled="loading" @click="handleSubmit">
