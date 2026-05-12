@@ -32,7 +32,8 @@ public class StatsController {
         Long userId = Long.valueOf(userDetails.getUsername());
         StatsOverviewVO vo = new StatsOverviewVO();
         vo.setTotalUrls(urlMapper.selectCount(
-                new LambdaQueryWrapper<UrlMap>().eq(UrlMap::getUserId, userId).or().isNull(UrlMap::getUserId)));
+                new LambdaQueryWrapper<UrlMap>().eq(UrlMap::getUserId, userId).or().isNull(UrlMap::getUserId)
+                        .eq(UrlMap::getIsActive, true)));
         vo.setTotalViews(urlMapper.selectList(
                 new LambdaQueryWrapper<UrlMap>().eq(UrlMap::getUserId, userId).or().isNull(UrlMap::getUserId))
                 .stream().mapToInt(UrlMap::getViews).sum());
