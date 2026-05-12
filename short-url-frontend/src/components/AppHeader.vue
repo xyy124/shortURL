@@ -16,9 +16,7 @@ function handleLogout() {
     <div class="header-inner">
       <router-link to="/" class="logo">短链接</router-link>
       <nav class="nav">
-        <router-link to="/" class="nav-link">首页</router-link>
         <template v-if="auth.isLoggedIn">
-          <router-link to="/admin/dashboard" class="nav-link">管理后台</router-link>
           <span class="nav-user">{{ auth.user?.nickname || auth.user?.username }}</span>
           <button class="btn btn-ghost btn-sm" @click="handleLogout">退出</button>
         </template>
