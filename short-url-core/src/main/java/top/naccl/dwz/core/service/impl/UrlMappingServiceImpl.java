@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import top.naccl.dwz.common.constant.ShortUrlConstants;
 import top.naccl.dwz.common.entity.UrlMap;
 import top.naccl.dwz.common.enums.ResultCode;
@@ -34,13 +35,10 @@ public class UrlMappingServiceImpl implements UrlMappingService {
     @Override
     public String getLongUrlByShortCode(String shortCode) {
         return cacheService.getWithProtection(shortCode, () -> {
-            UrlMap urlMap = urlMapper.selectById(shortCode);
-            if (urlMap == null) {
-                urlMap = urlMapper.selectOne(
-                    new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<UrlMap>()
-                        .eq(UrlMap::getShortCode, shortCode)
-                        .eq(UrlMap::getIsActive, true));
-            }
+            UrlMap urlMap = urlMapper.selectOne(
+                new LambdaQueryWrapper<UrlMap>()
+                    .eq(UrlMap::getShortCode, shortCode)
+                    .eq(UrlMap::getIsActive, true));
             return urlMap != null ? urlMap.getLongUrl() : null;
         });
     }
