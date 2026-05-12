@@ -8,3 +8,5 @@ dist/
 *.iml
 *.swp
 logs/
+.claude/
+*.local.*
