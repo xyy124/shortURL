@@ -21,7 +21,7 @@ const auth = useAuthStore()
       <div class="preview-tags">
         <span class="preview-tag">自定义后缀</span>
         <span class="preview-tag">短链还原</span>
-        <span class="preview-tag">数据统计</span>
+        <span class="preview-tag">访问统计</span>
         <span class="preview-tag">批量生成</span>
       </div>
     </div>
@@ -30,7 +30,8 @@ const auth = useAuthStore()
       <p class="preview-label">您已登录，可使用全部功能：</p>
       <div class="preview-tags">
         <span class="preview-tag tag-active">自定义后缀</span>
-        <span class="preview-tag tag-active">数据统计</span>
+        <span class="preview-tag tag-active">短链还原</span>
+        <span class="preview-tag tag-active">访问统计</span>
         <span class="preview-tag tag-active">批量生成</span>
       </div>
     </div>
