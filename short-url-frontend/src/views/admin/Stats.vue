@@ -11,18 +11,23 @@ let chart: echarts.ECharts | null = null
 
 async function fetchData() {
   loading.value = true
+  hasData.value = false
   try {
     const res = await getDailyStats({ days: days.value })
     loading.value = false
     await nextTick()
     renderChart(res.data)
-  } catch {
+  } catch (e) {
+    console.error('获取统计数据失败', e)
     loading.value = false
   }
 }
 
+const hasData = ref(false)
+
 function renderChart(data: DailyStatsItem[]) {
-  if (!chartRef.value) return
+  hasData.value = data.length > 0
+  if (!chartRef.value || !hasData.value) return
   if (!chart) {
     chart = echarts.init(chartRef.value)
   }
@@ -93,6 +98,7 @@ watch(days, fetchData)
       </select>
     </div>
     <div v-if="loading" class="loading-wrap"><span class="spinner" /></div>
+    <div v-else-if="!hasData" class="loading-wrap" style="color:var(--color-text-secondary)">暂无数据</div>
     <div v-else ref="chartRef" class="chart-wrap card" />
   </div>
 </template>
