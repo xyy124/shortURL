@@ -38,6 +38,6 @@ public class RedisBloomFilter {
     }
 
     private long hash(String key, int seed) {
-        return HashUtil.murmur32((key + seed).getBytes(StandardCharsets.UTF_8));
+        return HashUtil.murmur32((key + seed).getBytes(StandardCharsets.UTF_8)) & 0xFFFFFFFFL;
     }
 }

@@ -30,6 +30,6 @@ public class ShortenController {
             longUrl = "http://" + longUrl;
         }
         String shortCode = urlMappingService.createShortUrl(longUrl, null, request.getCustomCode());
-        return ApiResponse.ok(new ShortenResponse(shortCode, host + shortCode, longUrl));
+        return ApiResponse.ok(new ShortenResponse(shortCode, host + "/" + shortCode, longUrl));
     }
 }

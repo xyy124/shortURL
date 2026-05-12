@@ -61,7 +61,7 @@ public class UrlManageController {
             @RequestBody CustomShortenRequest request) {
         String shortCode = urlMappingService.createShortUrl(
                 request.getLongUrl(), Long.valueOf(userDetails.getUsername()), request.getCustomCode());
-        return ApiResponse.ok(new ShortenResponse(shortCode, host + shortCode, request.getLongUrl()));
+        return ApiResponse.ok(new ShortenResponse(shortCode, host + "/" + shortCode, request.getLongUrl()));
     }
 
     @DeleteMapping("/{id}")
