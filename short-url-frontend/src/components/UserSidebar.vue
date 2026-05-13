@@ -118,7 +118,7 @@ function isDisabled(item: MenuItem): boolean {
   background: var(--sidebar-bg);
   display: flex;
   flex-direction: column;
-  z-index: 50;
+  z-index: 101;
   overflow-y: auto;
 }
 

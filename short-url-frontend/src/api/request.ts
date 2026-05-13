@@ -15,7 +15,13 @@ request.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 })
 
 request.interceptors.response.use(
-  (res) => res.data,
+  (res) => {
+    const body = res.data as ApiResponse<unknown>
+    if (body.code !== 200) {
+      return Promise.reject(new Error(body.msg || '请求失败'))
+    }
+    return res.data
+  },
   (err: AxiosError<ApiResponse<null>>) => {
     if (err.response?.status === 401) {
       localStorage.removeItem('token')
